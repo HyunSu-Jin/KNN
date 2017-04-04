@@ -1,7 +1,7 @@
 import numpy as np
 import operator
 import collections
-
+from os import listdir
 def file2Matrix(filename):
     '''
     :param filename: filepath that we will read
@@ -32,6 +32,7 @@ def normalization(dataset):
     minVals = dataset.min(axis=0) # get min values by column (vector)
     maxVals = dataset.max(axis=0) # get max values by column (vector)
     ranges = maxVals-minVals # get ranges (vector) It means max-min
+    ranges = np.where(ranges==0,1,ranges)
     m = dataset.shape[0]
     normMatrix = dataset - np.tile(minVals,(m,1))
     normMatrix = normMatrix / np.tile(ranges,(m,1))
@@ -45,8 +46,13 @@ def predict(sample,normDataset,labels,minVals,ranges,k):
     minVals,ranges를 참고하여 test-tuple를 normalize한다.
     '''
     # normalize the sample
+    #print("minVals : ",minVals)
+    #print(sample)
     sample = sample - minVals
+    ranges = np.where(ranges==0,1,ranges)
     sample = sample / ranges
+    #print(sample)
+    #print(ranges)
 
     m = normDataset.shape[0] # the number of instances
     # calculate distance between testTuple and objects -- Euclid distance
@@ -88,7 +94,49 @@ def getAccuracy(testDataSet,testLables,dataSet,labels,k):
         if prediction != real_label:
             error_Cnt +=1
         index+=1
-    print("Error count",error_Cnt)
+    #print("Error count",error_Cnt)
     error_rate = error_Cnt / test_m
     accuacy = 1.0 - error_rate
     return accuacy
+
+def img2Vector(filename):
+    '''
+    :param filename:
+    :return: return matrix (1x1024)
+    '''
+    returnVec = np.zeros(1024)
+    #returnVec = np.zeros((1,1024)) # 1x1024 matrix 2-dimension
+    fr = open(filename)
+    for i in range(32): # 0~31
+        lineStr = fr.readline()
+        for j in range(32): # 0~31
+            returnVec[32 * i + j] = int(lineStr[j])
+            # returnVec[0,32*i + j] = int(lineStr[j])
+    return returnVec
+
+def getTrainingDataSet_MNIST():
+    hwLabels = [] # class label list
+    trainingFileList = listdir('trainingDigits') # returns the file-list
+    m = len(trainingFileList)
+    trainingMat = np.zeros((m,1024)) # 32*32 = 1024
+    for i in range(m):
+        fileNameStr = trainingFileList[i]
+        fileStr = fileNameStr.split('.')[0] # abc.txt 에서 abc분리
+        classNumStr = int(fileStr.split('_')[0]) # choose the class label as number
+        hwLabels.append(classNumStr)
+        trainingMat[i,:] =img2Vector('./trainingDigits/' + fileNameStr)
+    return trainingMat,hwLabels
+
+def getTestDataSet_MNIST():
+    labels =[]
+    dirFileLists = listdir('testDigits')
+    m = len(dirFileLists)
+    testDataSet = np.zeros((m,1024))
+    for i in range(m):
+        # i번째 파일을 읽어드림
+        fileNameStr = dirFileLists[i]
+        fileStr = fileNameStr.split('.')[0]
+        classStr = int(fileStr.split('_')[0])
+        labels.append(classStr)
+        testDataSet[i,:] = img2Vector('./testDigits/'+fileNameStr)
+    return testDataSet, labels
