@@ -11,13 +11,13 @@ implemented by python3
 
 ### feature의 종류
 1. nomial
-property value간에 우선순위나 순서가 존재하지 않는경우. ex)색깔
+- property value간에 우선순위나 순서가 존재하지 않는경우. ex)색깔
 2. binary
-Yes or No 또는 1 or 0 으로 두개의 데이터로 갈라지는 경우. ex)질병 양성/음성판정
+- Yes or No 또는 1 or 0 으로 두개의 데이터로 갈라지는 경우. ex)질병 양성/음성판정
 3. ordinal
-순서형 데이터형식. ex) 학년
+- 순서형 데이터형식. ex) 학년
 4. numeric(continuous)
-데이터의 수치를 표현할 수 있는 형식. ex) salary
+- 데이터의 수치를 표현할 수 있는 형식. ex) salary
 
 ## 구현
 위 예제에서 사용하는 데이터는 모든 feature가 numeric type이므로 거리측정방법으로 유클리드 거리, 맨해튼 거리,민코브스키 거리, 최소상계거리 측정법을 사용할 수 있다. 본 예제에서는 데이터간 유사성(similarity)측정방법으로 유클리드거리,Euclideandistance 를 사용하도록 한다.
